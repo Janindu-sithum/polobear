@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard - Student Billing & Upload Center</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #eefbff; padding: 20px; }
+    nav { background: #fff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,191,255,0.1); }
+    .logo { font-size: 1.6rem; font-weight: bold; color: #00bfff; }
+    .btn { background: #00bfff; color: white; padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+    input, select, textarea { width: 100%; margin-bottom: 10px; padding: 10px; border-radius: 8px; border: 1px solid #ccc; }
+    .section { margin-top: 30px; max-width: 600px; }
+    .student-card { background: white; padding: 15px; margin: 10px 0; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); cursor: pointer; }
+    .lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; }
+    .lightbox-content { background: white; padding: 20px; border-radius: 12px; width: 90%; max-width: 500px; position: relative; text-align: center; }
+    .close-btn { position: absolute; top: 10px; right: 15px; background: red; color: white; border: none; border-radius: 50%; padding: 5px 10px; cursor: pointer; }
+    .copy-box { background: #f0f0f0; padding: 10px; border-radius: 6px; margin-top: 10px; white-space: pre-wrap; }
+    .search-filter { display: flex; gap: 10px; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Dashboard</div>
+  <a href="index.html" class="btn">Back to Courses</a>
+</nav>
+
+<!-- Sections are below this line -->
+
+<!-- Search & Filter -->
+<div class="section">
+  <h2>Search & Filter Students</h2>
+  <div class="search-filter">
+    <input type="text" id="searchInput" placeholder="Search by name or ID">
+    <select id="filterMonth">
+      <option value="">All Months</option>
+      <option>January</option><option>February</option><option>March</option>
+      <option>April</option><option>May</option><option>June</option>
+      <option>July</option><option>August</option><option>September</option>
+      <option>October</option><option>November</option><option>December</option>
+    </select>
+  </div>
+</div>
+
+<!-- All Students -->
+<div class="section">
+  <h2>All Students</h2>
+  <div id="studentList"></div>
+</div>
+
+<!-- Add Student -->
+<div class="section">
+  <h2>Add Student</h2>
+  <input type="text" id="stuName" placeholder="Full Name">
+  <select id="stuMonth">
+    <option value="">-- Choose Month --</option>
+    <option>January</option><option>February</option><option>March</option>
+    <option>April</option><option>May</option><option>June</option>
+    <option>July</option><option>August</option><option>September</option>
+    <option>October</option><option>November</option><option>December</option>
+  </select>
+  <input type="text" id="stuPhone" placeholder="Phone Number">
+  <input type="text" id="stuBill" placeholder="Bill Amount (Rs.)">
+  <button class="btn" id="addStudentBtn">Add Student</button>
+</div>
+
+
+<!-- Lightboxes (Student Detail + Selection) -->
+<div class="lightbox" id="studentLightbox">
+  <div class="lightbox-content">
+    <button class="close-btn" id="closeLightboxBtn">×</button>
+    <h3>Student Details</h3>
+    <div class="copy-box" id="studentDetailsBox"></div>
+    <button class="btn" id="copyDetailsBtn">Copy</button>
+  </div>
+</div>
+
+
+<a href="upload.html"><button>Upload</button></a> 
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCfRjYCF7k6bV3Pp9BHXm86yEVkkll4rzQ",
+    authDomain: "helix-ofc-7d382.firebaseapp.com",
+    projectId: "helix-ofc-7d382",
+    storageBucket: "helix-ofc-7d382.appspot.com",
+    messagingSenderId: "443626880782",
+    appId: "1:443626880782:web:0a697b0fb7eafe4910615f"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  let students = [];
+  let selectedStudents = [];
+
+  function generateID() {
+    return 'ID' + Math.floor(Math.random() * 1000000);
+  }
+
+  function addStudent() {
+    const name = document.getElementById("stuName").value.trim();
+    const month = document.getElementById("stuMonth").value;
+    const phone = document.getElementById("stuPhone").value.trim();
+    const bill = document.getElementById("stuBill").value.trim();
+    const studentId = generateID();
+    if (!name || !month || !phone || !bill) return alert("Fill all fields");
+
+    db.collection("students").doc(studentId).set({ studentId, name, month, phone, bill })
+      .then(() => {
+        alert("Student added!");
+        document.getElementById("stuName").value = "";
+        document.getElementById("stuMonth").value = "";
+        document.getElementById("stuPhone").value = "";
+        document.getElementById("stuBill").value = "";
+        loadStudents();
+      });
+  }
+
+  function loadStudents() {
+    db.collection("students").get().then(snapshot => {
+      students = [];
+      snapshot.forEach(doc => students.push(doc.data()));
+      displayStudents(students);
+    });
+  }
+
+  function displayStudents(data) {
+    const list = document.getElementById("studentList");
+    list.innerHTML = "";
+    data.forEach(stu => {
+      list.innerHTML += `<div class='student-card' onclick='viewStudent("${stu.studentId}")'>
+        <strong>${stu.name}</strong><br>Month: ${stu.month}<br>Phone: ${stu.phone}<br>ID: ${stu.studentId}
+      </div>`;
+    });
+  }
+
+  function filterStudents() {
+    const keyword = document.getElementById("searchInput").value.toLowerCase();
+    const month = document.getElementById("filterMonth").value;
+    const filtered = students.filter(s =>
+      (!month || s.month === month) &&
+      (s.name.toLowerCase().includes(keyword) || s.studentId.toLowerCase().includes(keyword))
+    );
+    displayStudents(filtered);
+  }
+
+  function viewStudent(id) {
+    const s = students.find(stu => stu.studentId === id);
+    if (!s) return;
+    const msg = `🎓 Student Added!\nName: ${s.name}\nMonth: ${s.month}\nPhone: ${s.phone}\nID: ${s.studentId}`;
+    document.getElementById("studentDetailsBox").textContent = msg;
+    document.getElementById("studentLightbox").style.display = "flex";
+  }
+
+  function closeLightbox() {
+    document.getElementById("studentLightbox").style.display = "none";
+  }
+
+  function copyDetails() {
+    const msg = document.getElementById("studentDetailsBox").textContent;
+    navigator.clipboard.writeText(msg).then(() => {
+      alert("Copied!");
+    });
+  }
+
+  function openSelectionLightbox() {
+    const selectedMonth = document.getElementById("uploadMonth").value;
+    if (!selectedMonth) return alert("Please select a month");
+
+    const box = document.getElementById("studentCheckboxes");
+    box.innerHTML = "<p>Loading students...</p>";
+    db.collection("students").where("month", "==", selectedMonth).get().then(snapshot => {
+      box.innerHTML = "";
+      snapshot.forEach(doc => {
+        const d = doc.data();
+        box.innerHTML += `<label><input type='checkbox' value='${d.studentId}'> ${d.name}</label><br>`;
+      });
+      document.getElementById("selectionLightbox").style.display = "flex";
+    });
+  }
+
+  function closeSelectionLightbox() {
+    document.getElementById("selectionLightbox").style.display = "none";
+  }
+
+  function confirmSelection() {
+    selectedStudents = Array.from(document.querySelectorAll("#studentCheckboxes input:checked")).map(cb => cb.value);
+    document.getElementById("selectedStudentsLabel").textContent = `Selected: ${selectedStudents.length} students`;
+    closeSelectionLightbox();
+  }
+
+  function uploadData() {
+    const type = document.getElementById("uploadType").value;
+    const day = document.getElementById("uploadDay").value.trim();
+    const message = document.getElementById("uploadMessage").value.trim();
+    const link = document.getElementById("uploadLink").value.trim();
+    if (!type || !day || !message || selectedStudents.length === 0) return alert("Fill all fields and select students");
+
+    selectedStudents.forEach(id => {
+      const ref = db.collection("students").doc(id);
+      ref.collection(type).add({ day, message, link, created: new Date() });
+    });
+
+    alert("Uploaded successfully!");
+    document.getElementById("uploadType").value = "";
+    document.getElementById("uploadDay").value = "";
+    document.getElementById("uploadMessage").value = "";
+    document.getElementById("uploadLink").value = "";
+    document.getElementById("selectedStudentsLabel").textContent = "Selected: None";
+    selectedStudents = [];
+  }
+
+  window.onload = function() {
+    loadStudents();
+
+    // Event listeners
+    document.getElementById("searchInput").addEventListener("input", filterStudents);
+    document.getElementById("filterMonth").addEventListener("change", filterStudents);
+    document.getElementById("addStudentBtn").addEventListener("click", addStudent);
+    document.getElementById("copyDetailsBtn").addEventListener("click", copyDetails);
+    document.getElementById("closeLightboxBtn").addEventListener("click", closeLightbox);
+    document.getElementById("chooseStudentsBtn").addEventListener("click", openSelectionLightbox);
+    document.getElementById("closeSelectionBtn").addEventListener("click", closeSelectionLightbox);
+    document.getElementById("confirmSelectionBtn").addEventListener("click", confirmSelection);
+    document.getElementById("uploadDataBtn").addEventListener("click", uploadData);
+  }
+</script>
+</body>
+</html>

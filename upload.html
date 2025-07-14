@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!-- Upload Class / Recording / Notes / Papers -->
+<div class="section">
+  <h2>Upload Class / Recording / Notes / Papers</h2>
+  <select id="uploadType">
+    <option value="">-- Choose Type --</option>
+    <option value="class">Class Day</option>
+    <option value="recording">Recording</option>
+    <option value="notes">Notes</option>
+    <option value="papers">Papers</option>
+  </select>
+  <input type="text" id="uploadDay" placeholder="Enter Date (e.g. 2025-06-01)">
+  <select id="uploadMonth">
+    <option value="">-- Choose Month --</option>
+    <option>January</option><option>February</option><option>March</option>
+    <option>April</option><option>May</option><option>June</option>
+    <option>July</option><option>August</option><option>September</option>
+    <option>October</option><option>November</option><option>December</option>
+  </select>
+  <textarea id="uploadMessage" placeholder="Message"></textarea>
+  <input type="text" id="uploadLink" placeholder="Link (optional)">
+  <button class="btn" id="chooseStudentsBtn">Choose Students</button>
+  <p id="selectedStudentsLabel">Selected: None</p>
+  <button class="btn" id="uploadDataBtn">Upload</button>
+</div>
+<div class="lightbox" id="selectionLightbox" style="display:none; justify-content:flex-start; align-items:flex-start; overflow-y:auto;">
+  <div class="lightbox-content" style="max-height: 80vh; overflow-y: auto;">
+    <button class="close-btn" id="closeSelectionBtn">×</button>
+    <h3>Select Students</h3>
+    <div id="studentCheckboxes" style="text-align:left; max-height:60vh; overflow-y:auto; padding:5px;"></div>
+    <button class="btn" id="confirmSelectionBtn" style="margin-top:10px;">Confirm Selection</button>
+  </div>
+</div>
+<!-- All Students -->
+<div class="section">
+  <h2>All Students</h2>
+  <div id="studentList"></div>
+</div>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCfRjYCF7k6bV3Pp9BHXm86yEVkkll4rzQ",
+    authDomain: "helix-ofc-7d382.firebaseapp.com",
+    projectId: "helix-ofc-7d382",
+    storageBucket: "helix-ofc-7d382.appspot.com",
+    messagingSenderId: "443626880782",
+    appId: "1:443626880782:web:0a697b0fb7eafe4910615f"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  let students = [];
+  let selectedStudents = [];
+
+  function generateID() {
+    return 'ID' + Math.floor(Math.random() * 1000000);
+  }
+
+  function addStudent() {
+    const name = document.getElementById("stuName").value.trim();
+    const month = document.getElementById("stuMonth").value;
+    const phone = document.getElementById("stuPhone").value.trim();
+    const bill = document.getElementById("stuBill").value.trim();
+    const studentId = generateID();
+    if (!name || !month || !phone || !bill) return alert("Fill all fields");
+
+    db.collection("students").doc(studentId).set({ studentId, name, month, phone, bill })
+      .then(() => {
+        alert("Student added!");
+        document.getElementById("stuName").value = "";
+        document.getElementById("stuMonth").value = "";
+        document.getElementById("stuPhone").value = "";
+        document.getElementById("stuBill").value = "";
+        loadStudents();
+      });
+  }
+
+  function loadStudents() {
+    db.collection("students").get().then(snapshot => {
+      students = [];
+      snapshot.forEach(doc => students.push(doc.data()));
+      displayStudents(students);
+    });
+  }
+
+  function displayStudents(data) {
+    const list = document.getElementById("studentList");
+    list.innerHTML = "";
+    data.forEach(stu => {
+      list.innerHTML += `<div class='student-card' onclick='viewStudent("${stu.studentId}")'>
+        <strong>${stu.name}</strong><br>Month: ${stu.month}<br>Phone: ${stu.phone}<br>ID: ${stu.studentId}
+      </div>`;
+    });
+  }
+
+  function filterStudents() {
+    const keyword = document.getElementById("searchInput").value.toLowerCase();
+    const month = document.getElementById("filterMonth").value;
+    const filtered = students.filter(s =>
+      (!month || s.month === month) &&
+      (s.name.toLowerCase().includes(keyword) || s.studentId.toLowerCase().includes(keyword))
+    );
+    displayStudents(filtered);
+  }
+
+  function viewStudent(id) {
+    const s = students.find(stu => stu.studentId === id);
+    if (!s) return;
+    const msg = `🎓 Student Added!\nName: ${s.name}\nMonth: ${s.month}\nPhone: ${s.phone}\nID: ${s.studentId}`;
+    document.getElementById("studentDetailsBox").textContent = msg;
+    document.getElementById("studentLightbox").style.display = "flex";
+  }
+
+  function closeLightbox() {
+    document.getElementById("studentLightbox").style.display = "none";
+  }
+
+  function copyDetails() {
+    const msg = document.getElementById("studentDetailsBox").textContent;
+    navigator.clipboard.writeText(msg).then(() => {
+      alert("Copied!");
+    });
+  }
+
+  function openSelectionLightbox() {
+    const selectedMonth = document.getElementById("uploadMonth").value;
+    if (!selectedMonth) return alert("Please select a month");
+
+    const box = document.getElementById("studentCheckboxes");
+    box.innerHTML = "<p>Loading students...</p>";
+    db.collection("students").where("month", "==", selectedMonth).get().then(snapshot => {
+      box.innerHTML = "";
+      snapshot.forEach(doc => {
+        const d = doc.data();
+        box.innerHTML += `<label><input type='checkbox' value='${d.studentId}'> ${d.name}</label><br>`;
+      });
+      document.getElementById("selectionLightbox").style.display = "flex";
+    });
+  }
+
+  function closeSelectionLightbox() {
+    document.getElementById("selectionLightbox").style.display = "none";
+  }
+
+  function confirmSelection() {
+    selectedStudents = Array.from(document.querySelectorAll("#studentCheckboxes input:checked")).map(cb => cb.value);
+    document.getElementById("selectedStudentsLabel").textContent = `Selected: ${selectedStudents.length} students`;
+    closeSelectionLightbox();
+  }
+
+  function uploadData() {
+    const type = document.getElementById("uploadType").value;
+    const day = document.getElementById("uploadDay").value.trim();
+    const message = document.getElementById("uploadMessage").value.trim();
+    const link = document.getElementById("uploadLink").value.trim();
+    if (!type || !day || !message || selectedStudents.length === 0) return alert("Fill all fields and select students");
+
+    selectedStudents.forEach(id => {
+      const ref = db.collection("students").doc(id);
+      ref.collection(type).add({ day, message, link, created: new Date() });
+    });
+
+    alert("Uploaded successfully!");
+    document.getElementById("uploadType").value = "";
+    document.getElementById("uploadDay").value = "";
+    document.getElementById("uploadMessage").value = "";
+    document.getElementById("uploadLink").value = "";
+    document.getElementById("selectedStudentsLabel").textContent = "Selected: None";
+    selectedStudents = [];
+  }
+
+  window.onload = function() {
+    loadStudents();
+
+    // Event listeners
+    document.getElementById("searchInput").addEventListener("input", filterStudents);
+    document.getElementById("filterMonth").addEventListener("change", filterStudents);
+    document.getElementById("addStudentBtn").addEventListener("click", addStudent);
+    document.getElementById("copyDetailsBtn").addEventListener("click", copyDetails);
+    document.getElementById("closeLightboxBtn").addEventListener("click", closeLightbox);
+    document.getElementById("chooseStudentsBtn").addEventListener("click", openSelectionLightbox);
+    document.getElementById("closeSelectionBtn").addEventListener("click", closeSelectionLightbox);
+    document.getElementById("confirmSelectionBtn").addEventListener("click", confirmSelection);
+    document.getElementById("uploadDataBtn").addEventListener("click", uploadData);
+  }
+</script>
+</body>
+</html>
+
+    
+</body>
+</html>

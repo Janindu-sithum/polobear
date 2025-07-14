@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PoloBear - Course Gallery</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    /* --- Snowfall Animation Background --- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background: linear-gradient(to bottom, #dceefb, #ffffff);
+  color: #333;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Snow animation */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  
+  background-size: cover;
+  opacity: 0.5;
+  z-index: 1;
+  pointer-events: none;
+}
+
+header {
+  background: #2c3e50;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar .logo {
+  width: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  z-index: 2;
+}
+.brand {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #ecf0f1;
+}
+.nav-right {
+  display: flex;
+  align-items: center;
+  z-index: 2;
+}
+.nav-right button {
+  margin-right: 1rem;
+  padding: 6px 12px;
+  background: #4e54c8;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+#searchBar {
+  padding: 0.5rem;
+  width: 250px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.autocomplete-suggestions {
+  position: absolute;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 999;
+  width: 250px;
+}
+.autocomplete-suggestions div {
+  padding: 8px 10px;
+  cursor: pointer;
+}
+.autocomplete-suggestions div:hover {
+  background-color: #eee;
+}
+
+.gallery-title {
+  text-align: center;
+  font-size: 2rem;
+  margin: 2rem 0 0.5rem;
+  z-index: 2;
+  position: relative;
+}
+
+.special-classes {
+  text-align: center;
+  font-size: 1.3rem;
+  margin-top: 0.5rem;
+  color: #4e54c8;
+  position: relative;
+  z-index: 2;
+}
+
+.course-gallery {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  padding: 2rem;
+  z-index: 2;
+  position: relative;
+}
+
+.course {
+  background: #ffffffcc;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  transition: 0.3s ease;
+  width: 250px;
+  cursor: pointer;
+  text-align: center;
+  padding: 1rem;
+  backdrop-filter: blur(5px);
+  border: 1px solid #dce1e7;
+}
+.course:hover {
+  transform: scale(1.03);
+}
+.course img {
+  width: 100%;
+  border-radius: 10px;
+}
+.start-btn {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background: #4e54c8;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.start-btn:hover {
+  transform: scale(1.05);
+}
+
+.course-lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: snowFade 0.7s ease forwards;
+}
+@keyframes snowFade {
+  from {opacity: 0; transform: scale(0.8);}
+  to {opacity: 1; transform: scale(1);}
+}
+
+.lightbox-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 600px;
+  width: 90%;
+  position: relative;
+  z-index: 1001;
+  animation: zoomIn 0.4s ease;
+}
+.lightbox-content img {
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 1.5rem;
+  color: #333;
+  cursor: pointer;
+}
+
+@keyframes zoomIn {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .nav-right {
+    margin-top: 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  .course-gallery {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="nav-left">
+    <a href="profile.html">
+      <img src="use.jpg" alt="User" class="logo">
+    </a>
+    <h1 class="brand">PoloBear</h1>
+  </div>
+  <div class="nav-right">
+    <button>සිංහල</button>
+    <div style="position: relative;">
+      <input type="text" id="searchBar" placeholder="Search courses...">
+      <div id="suggestions" class="autocomplete-suggestions"></div>
+    </div>
+  </div>
+</header>
+
+
+
+<h3 class="special-classes">Special Classes</h3>
+
+
+
+
+
+<section class="course-gallery">
+  <div class="course" data-title="Grade 5 Scholarship Class" onclick="openLightbox('scholarship')">
+    <img src="assest/school.png" alt="Scholarship Course">
+    <h3>Grade 5 Scholarship Class</h3>
+    <button class="start-btn">Start</button>
+  </div>
+</section>
+
+<h2 class="gallery-title">Course Gallery</h2>
+<section class="course-gallery" id="courseGallery">
+  <div class="course" data-title="HTML Crash Course" onclick="openLightbox('html')">
+    <img src="assest/html.png" alt="HTML Course">
+    <h3>HTML Crash Course</h3>
+    <button class="start-btn">Start</button>
+  </div>
+  <div class="course" data-title="Ai Crash Course" onclick="openLightbox('css')">
+    <img src="assest/ai.png" alt="CSS Course">
+    <h3>Ai Course</h3>
+    <button class="start-btn">Start</button>
+  </div>
+</section>
+
+
+
+<!-- Lightboxes -->
+<div id="html" class="course-lightbox">
+  <div class="lightbox-content">
+    <span class="close-btn" onclick="closeLightbox('html')">&times;</span>
+    <h3>HTML Crash Course</h3>
+    <img src="assest/html.png" alt="HTML Course">
+    <p>Description of HTML Crash Course...</p>
+    <a href="html.html"><button class="start-btn">Start Course</button></a>
+  </div>
+</div>
+
+<div id="css" class="course-lightbox">
+  <div class="lightbox-content">
+    <span class="close-btn" onclick="closeLightbox('css')">&times;</span>
+    <h3>Ai Course</h3>
+    <img src="assest/ai.png" alt="CSS Course">
+    <p>Description of Ai Crash Course...</p>
+    <a href="ai.html"><button class="start-btn">Start Course</button></a>
+  </div>
+</div>
+
+<div id="scholarship" class="course-lightbox">
+  <div class="lightbox-content">
+    <span class="close-btn" onclick="closeLightbox('scholarship')">&times;</span>
+    <h3>Grade 5 Scholarship Class</h3>
+    <img src="assest/school.png" alt="Scholarship Course">
+    <p>This special class is designed to prepare Grade 5 students for the Scholarship Exam with focused lessons, mock tests, and expert guidance.</p>
+    <a href="scholarship.html"><button class="start-btn">Start Course</button></a>
+  </div>
+</div>
+
+<script>
+  const courseTitles = ["HTML Crash Course", "CSS Crash Course", "Grade 5 Scholarship Class"];
+  const searchInput = document.getElementById("searchBar");
+  const suggestionBox = document.getElementById("suggestions");
+
+  searchInput.addEventListener("input", function () {
+    const filter = this.value.toLowerCase();
+    const courses = document.querySelectorAll(".course");
+    suggestionBox.innerHTML = '';
+
+    courses.forEach(course => {
+      const title = course.getAttribute("data-title").toLowerCase();
+      course.style.display = title.includes(filter) ? "block" : "none";
+
+      if (filter && title.includes(filter)) {
+        const suggestion = document.createElement("div");
+        suggestion.textContent = course.getAttribute("data-title");
+        suggestion.onclick = () => {
+          searchInput.value = course.getAttribute("data-title");
+          suggestionBox.innerHTML = '';
+          courses.forEach(c => {
+            c.style.display = c.getAttribute("data-title").toLowerCase().includes(filter) ? "block" : "none";
+          });
+        };
+        suggestionBox.appendChild(suggestion);
+      }
+    });
+
+    if (!filter) suggestionBox.innerHTML = '';
+  });
+
+  function openLightbox(id) {
+    document.getElementById(id).style.display = "flex";
+  }
+  function closeLightbox(id) {
+    document.getElementById(id).style.display = "none";
+  }
+</script>
+</body>
+</html>

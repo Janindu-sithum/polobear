@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Scholarship Class</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; background: #f1fbff; padding: 20px; margin: 0; }
+    nav { background: #fff; padding: 15px 30px; display: flex; justify-content: space-between; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); }
+    .logo { font-size: 1.5rem; font-weight: bold; color: #00bfff; }
+    .nav-links a { margin-left: 20px; text-decoration: none; color: #007acc; font-weight: bold; }
+    .join-class, .profile-button { text-align: center; margin-top: 40px; }
+    input { padding: 10px; width: 250px; margin: 10px; border-radius: 8px; border: 1px solid #ccc; }
+    button { background: #00bfff; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo">Scholarship Class</div>
+    <div class="nav-links">
+      <a href="index.html">Courses</a>
+      <a href="#">Papers</a>
+    </div>
+  </nav>
+
+  <div class="join-class" id="joinSection">
+    <input type="text" id="studentIdInput" placeholder="Enter your Student ID" />
+    <button onclick="joinClass()">Go</button>
+  </div>
+
+  <div class="profile-button" id="profileSection" style="display:none;">
+    <button onclick="goToProfile()">Your Profile</button>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCfRjYCF7k6bV3Pp9BHXm86yEVkkll4rzQ",
+      authDomain: "helix-ofc-7d382.firebaseapp.com",
+      projectId: "helix-ofc-7d382",
+      storageBucket: "helix-ofc-7d382.appspot.com",
+      messagingSenderId: "443626880782",
+      appId: "1:443626880782:web:0a697b0fb7eafe4910615f"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let currentStudentId = "";
+
+    // Check saved ID on page load
+    window.onload = () => {
+      const savedId = localStorage.getItem("studentId");
+      if (savedId) {
+        db.collection("students").doc(savedId).get().then(doc => {
+          if (doc.exists) {
+            showProfile(savedId);
+          } else {
+            localStorage.removeItem("studentId");
+            showJoinForm();
+          }
+        }).catch(() => showJoinForm());
+      } else {
+        showJoinForm();
+      }
+    };
+
+    function joinClass() {
+      const id = document.getElementById("studentIdInput").value.trim();
+      if (!id) return alert("Please enter your Student ID");
+
+      db.collection("students").doc(id).get().then(doc => {
+        if (doc.exists) {
+          localStorage.setItem("studentId", id);
+          showProfile(id);
+        } else {
+          alert("ID not found. Please check again.");
+        }
+      });
+    }
+
+    function goToProfile() {
+      if (currentStudentId) {
+        window.location.href = `student.html?id=${currentStudentId}`;
+      }
+    }
+
+    function showProfile(id) {
+      currentStudentId = id;
+      document.getElementById("joinSection").style.display = "none";
+      document.getElementById("profileSection").style.display = "block";
+    }
+
+    function showJoinForm() {
+      document.getElementById("joinSection").style.display = "block";
+      document.getElementById("profileSection").style.display = "none";
+    }
+  </script>
+</body>
+</html>

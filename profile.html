@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="images/icon.ico" type="image/ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shopping Mall - Profile</title>
+  <link
+    href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css"
+    rel="stylesheet"
+  />
+  <style>
+    /* PoloBear Style - Inspired by Ice Age theme */
+
+    :root {
+      --primary: #b3e9ff;
+      --accent: #ffffff;
+      --deep-blue: #2c3e50;
+      --ice-blue: #d8f6ff;
+      --frost: #e6f9ff;
+      --snow: #fefefe;
+      --hover-blue: #96e0ff;
+      --transition: all 0.4s ease-in-out;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(to top, var(--ice-blue), var(--snow));
+      min-height: 100vh;
+      color: var(--deep-blue);
+      overflow-x: hidden;
+      animation: frostIn 1s ease forwards;
+    }
+
+    nav {
+      background: var(--accent);
+      padding: 1.2rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.05);
+      border-radius: 0 0 20px 20px;
+      animation: slideDown 0.8s ease-in-out;
+    }
+
+    .logo {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #0bbfff;
+      text-shadow: 1px 1px 3px rgba(0, 187, 255, 0.2);
+      text-decoration: none;
+    }
+
+    .logout {
+      padding: 10px 20px;
+      background-color: #0bbfff;
+      border: none;
+      color: white;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .logout:hover {
+      background-color: var(--hover-blue);
+      transform: scale(1.05);
+      box-shadow: 0 0 12px rgba(0, 191, 255, 0.4);
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: var(--frost);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 40px rgba(0, 191, 255, 0.1);
+      animation: fadeInUp 1s ease;
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 2.2rem;
+      margin-bottom: 30px;
+      color: #0bbfff;
+      position: relative;
+    }
+    h2::after {
+      content: "";
+      display: block;
+      width: 80px;
+      height: 4px;
+      background: #0bbfff;
+      margin: 10px auto 0;
+      border-radius: 2px;
+      animation: growLine 1s ease-in-out;
+    }
+
+    .input-wrapper {
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      padding: 14px 18px;
+      border-radius: 14px;
+      margin-bottom: 20px;
+      border: 2px solid transparent;
+      transition: var(--transition);
+    }
+    .input-wrapper:focus-within {
+      border-color: #0bbfff;
+      box-shadow: 0 0 12px rgba(0, 191, 255, 0.3);
+    }
+    .input-icon {
+      font-size: 1.4rem;
+      color: #0bbfff;
+      margin-right: 12px;
+    }
+    input,
+    select {
+      border: none;
+      background: transparent;
+      outline: none;
+      width: 100%;
+      font-size: 1rem;
+      color: var(--deep-blue);
+    }
+    input::placeholder {
+      color: #aaa;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(to right, #0bbfff, #60f2ff);
+      color: #fff;
+      font-weight: bold;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0, 191, 255, 0.3);
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    @keyframes slideDown {
+      0% {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    @keyframes frostIn {
+      0% {
+        background: #cbeeff;
+      }
+      100% {
+        background: linear-gradient(to top, var(--ice-blue), var(--snow));
+      }
+    }
+    @keyframes growLine {
+      from {
+        width: 0;
+      }
+      to {
+        width: 80px;
+      }
+    }
+
+    /* Snow Animation Container */
+    #snow-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 9999;
+      display: none;
+    }
+
+    /* Individual Snowflake */
+    .snowflake {
+      position: absolute;
+      top: -10px;
+      color: white;
+      font-size: 1.5em;
+      animation: fall linear infinite;
+      opacity: 0.8;
+    }
+
+    /* Snow Falling Keyframes */
+    @keyframes fall {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="logo">Shopping Mall</a>
+    <button onclick="logout()" class="logout">Logout</button>
+  </nav>
+
+  <div class="container">
+    <h2>Shopping Mall Profile</h2>
+
+    <div class="input-wrapper">
+      <i class="bx bxs-user input-icon"></i>
+      <input
+        type="text"
+        id="name"
+        placeholder="Enter your full name"
+      />
+    </div>
+    <div class="input-wrapper">
+      <i class="bx bxs-phone input-icon"></i>
+      <input
+        type="text"
+        id="mobile"
+        placeholder="Enter your mobile number"
+      />
+    </div>
+    <div class="input-wrapper">
+      <i class="bx bxs-envelope input-icon"></i>
+      <input
+        type="email"
+        id="email"
+        placeholder="Enter your email address"
+        disabled
+      />
+    </div>
+    <div class="input-wrapper">
+      <i class="bx bxs-home input-icon"></i>
+      <input
+        type="text"
+        id="address"
+        placeholder="Enter your shipping address"
+      />
+    </div>
+
+    <button onclick="updateProfile()">Update Profile</button>
+  </div>
+
+  <div id="snow-container"></div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+  <script>
+    // Your Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCfRjYCF7k6bV3Pp9BHXm86yEVkkll4rzQ",
+      authDomain: "helix-ofc-7d382.firebaseapp.com",
+      databaseURL:
+        "https://helix-ofc-7d382-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "helix-ofc-7d382",
+      storageBucket: "helix-ofc-7d382.appspot.com",
+      messagingSenderId: "443626880782",
+      appId: "1:443626880782:web:0a697b0fb7eafe4910615f",
+      measurementId: "G-C9P4SYW613",
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // On user auth state change, load profile data
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        document.getElementById("email").value = user.email;
+
+        // Load existing profile data from Firestore
+        db.collection("users")
+          .doc(user.uid)
+          .get()
+          .then((doc) => {
+            if (doc.exists) {
+              const data = doc.data();
+              if (data.name) document.getElementById("name").value = data.name;
+              if (data.mobile) document.getElementById("mobile").value = data.mobile;
+              if (data.address) document.getElementById("address").value = data.address;
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading profile:", error);
+            alert("Failed to load profile data.");
+          });
+      } else {
+        // Not logged in, redirect to login
+        window.location.href = "login.html";
+      }
+    });
+
+    function updateProfile() {
+      const user = auth.currentUser;
+      if (!user) {
+        alert("No user is logged in.");
+        return;
+      }
+
+      const name = document.getElementById("name").value.trim();
+      const mobile = document.getElementById("mobile").value.trim();
+      const address = document.getElementById("address").value.trim();
+
+      if (!name || !mobile || !address) {
+        alert("Please fill in all fields.");
+        return;
+      }
+
+      // Save profile data in Firestore
+      db.collection("users")
+        .doc(user.uid)
+        .set(
+          {
+            name: name,
+            mobile: mobile,
+            address: address,
+          },
+          { merge: true }
+        )
+        .then(() => {
+          alert("Profile updated successfully!");
+          showSnowAnimation(); // Show snow animation
+
+        })
+        .catch((error) => {
+          console.error("Error updating profile:", error);
+          alert("Failed to update profile.");
+        });
+    }
+
+    function logout() {
+      auth.signOut().then(() => {
+        window.location.href = "login.html";
+      });
+    }
+
+    function showSnowAnimation() {
+  const snowContainer = document.getElementById("snow-container");
+  snowContainer.innerHTML = ""; // Clear any previous snowflakes
+  snowContainer.style.display = "block";
+
+  // Generate snowflakes
+  for (let i = 0; i < 60; i++) {
+    const snowflake = document.createElement("div");
+    snowflake.className = "snowflake";
+    snowflake.style.left = Math.random() * 100 + "vw";
+    snowflake.style.animationDuration = 2 + Math.random() * 3 + "s";
+    snowflake.style.fontSize = 1 + Math.random() * 2 + "em";
+    snowflake.textContent = "❄";
+    snowContainer.appendChild(snowflake);
+  }
+
+  // Hide after 3 seconds
+  setTimeout(() => {
+    snowContainer.style.display = "none";
+  }, 3000);
+}
+
+  </script>
+</body>
+</html>

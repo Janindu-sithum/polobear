@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Details</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; background: #f0faff; margin: 0; padding: 20px; }
+    nav { background: #fff; padding: 15px 30px; display: flex; justify-content: space-between; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+    .logo { font-weight: bold; font-size: 1.5rem; color: #00bfff; }
+    .tabs { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+    .tabs button { padding: 10px 20px; border: none; background: #e6f7ff; cursor: pointer; border-radius: 6px; transition: 0.3s; }
+    .tabs button.active { background: #00bfff; color: white; }
+    .section { display: none; background: #fff; padding: 20px; border-radius: 12px; margin-top: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+    .section.active { display: block; }
+    h2, h3 { color: #00bfff; }
+    ul { padding-left: 20px; }
+    li { margin-bottom: 8px; }
+    a.download-link { color: #0077cc; text-decoration: none; margin-left: 8px; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Student Profile</div>
+  <a href="index.html">Courses</a>
+</nav>
+
+<div id="studentData" class="section active">
+  <h2>Loading student...</h2>
+</div>
+
+<div class="tabs">
+  <button onclick="showTab(event, 'class')" class="active">📅 Class Days</button>
+  <button onclick="showTab(event, 'recording')">🎥 Recordings</button>
+  <button onclick="showTab(event, 'notes')">📝 Notes</button>
+  <button onclick="showTab(event, 'papers')">📄 Papers</button>
+</div>
+
+<div class="section active" id="tab-class"><ul id="classDays"></ul></div>
+<div class="section" id="tab-recording"><ul id="recordings"></ul></div>
+<div class="section" id="tab-notes"><ul id="notes"></ul></div>
+<div class="section" id="tab-papers"><ul id="papers"></ul></div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCfRjYCF7k6bV3Pp9BHXm86yEVkkll4rzQ",
+    authDomain: "helix-ofc-7d382.firebaseapp.com",
+    projectId: "helix-ofc-7d382",
+    storageBucket: "helix-ofc-7d382.appspot.com",
+    messagingSenderId: "443626880782",
+    appId: "1:443626880782:web:0a697b0fb7eafe4910615f"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  const studentId = new URLSearchParams(window.location.search).get("id");
+  const studentBox = document.getElementById("studentData");
+  const classList = document.getElementById("classDays");
+  const recordingList = document.getElementById("recordings");
+  const notesList = document.getElementById("notes");
+  const papersList = document.getElementById("papers");
+  const twoMonthsAgo = new Date();
+  twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2);
+
+  function showTab(event, tab) {
+    document.querySelectorAll(".tabs button").forEach(btn => btn.classList.remove("active"));
+    document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
+    event.currentTarget.classList.add("active");
+    const tabId = `tab-${tab}`;
+    document.getElementById(tabId).classList.add("active");
+  }
+
+  if (studentId) {
+    db.collection("students").doc(studentId).get().then(doc => {
+      if (doc.exists) {
+        const d = doc.data();
+        studentBox.innerHTML = `
+          <h2>${d.name || "Unnamed Student"}</h2>
+          <p><strong>ID:</strong> ${d.studentId || "N/A"}</p>
+          <p><strong>Phone:</strong> ${d.phone || "N/A"}</p>
+          <p><strong>Bill:</strong> Rs. ${d.bill || "0.00"}</p>
+          <p><strong>Month:</strong> ${d.month || "Not set"}</p>
+        `;
+
+        db.collection("students").doc(studentId).collection("class").orderBy("created", "desc").get().then(snapshot => {
+          classList.innerHTML = "";
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            classList.innerHTML += `<li><strong>${data.day || "Day"}:</strong> ${data.message || ""}</li>`;
+          });
+          if (!classList.innerHTML) classList.innerHTML = "<li>No class days found.</li>";
+        });
+
+        db.collection("students").doc(studentId).collection("recording").orderBy("created", "desc").get().then(snapshot => {
+          recordingList.innerHTML = "";
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            recordingList.innerHTML += `<li><strong>${data.day || "Day"}:</strong> ${data.message || ""}${data.link ? ` <a class='download-link' href='${data.link}' target='_blank'>Watch</a>` : ""}</li>`;
+          });
+          if (!recordingList.innerHTML) recordingList.innerHTML = "<li>No recordings found.</li>";
+        });
+
+        db.collection("students").doc(studentId).collection("notes").orderBy("created", "desc").get().then(snapshot => {
+          notesList.innerHTML = "";
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            let created = new Date(0);
+            if (data.created && data.created.toDate) {
+              created = data.created.toDate();
+            }
+            if (!data.created || created >= twoMonthsAgo) {
+              notesList.innerHTML += `<li><strong>${data.title || "Note"}:</strong> ${data.message || ""}${data.link ? ` <a class='download-link' href='${data.link}' target='_blank'>Download</a>` : ""}</li>`;
+            }
+          });
+          if (!notesList.innerHTML) notesList.innerHTML = "<li>No recent notes found.</li>";
+        });
+
+        db.collection("students").doc(studentId).collection("papers").orderBy("created", "desc").get().then(snapshot => {
+          papersList.innerHTML = "";
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            let created = new Date(0);
+            if (data.created && data.created.toDate) {
+              created = data.created.toDate();
+            }
+            if (!data.created || created >= twoMonthsAgo) {
+              papersList.innerHTML += `<li><strong>${data.title || "Paper"}:</strong> ${data.message || ""}${data.link ? ` <a class='download-link' href='${data.link}' target='_blank'>Download</a>` : ""}</li>`;
+            }
+          });
+          if (!papersList.innerHTML) papersList.innerHTML = "<li>No recent papers found.</li>";
+        });
+
+      } else {
+        studentBox.innerHTML = "<h2>Student not found</h2>";
+      }
+    }).catch(error => {
+      studentBox.innerHTML = `<h2>Error loading student: ${error.message}</h2>`;
+      console.error("Error fetching student:", error);
+    });
+  } else {
+    studentBox.innerHTML = "<h2>No ID provided</h2>";
+  }
+</script>
+</body>
+</html>

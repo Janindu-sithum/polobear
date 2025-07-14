@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<link rel="icon" href="images/icon.ico" type="image/ico">
+  <title>Login - Shopping Mall</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to right, #a1c4fd, #c2e9fb); /* Sky blue gradient */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    position: relative;
+    animation: fadeInBackground 1s ease-out;
+  }
+
+  @keyframes fadeInBackground {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  /* Cloud Animation */
+  .cloud {
+    position: absolute;
+    top: 10%;
+    left: -15%;
+    animation: flyClouds 90s linear infinite;
+
+  }
+
+  .cloud img {
+    width: 600px;
+    height: auto;
+  }
+
+  @keyframes flyClouds {
+    0% { left: -15%; top: 10%; }
+    50% { left: 50%; top: 20%; }
+    100% { left: 115%; top: 10%; }
+  }
+
+  .login-container {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    animation: slideIn 1s ease-out;
+  }
+
+  @keyframes slideIn {
+    0% { transform: translateY(-50px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+
+  .login-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #0072ff;
+    font-size: 24px;
+    animation: fadeInText 1s ease;
+  }
+
+  @keyframes fadeInText {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    opacity: 0;
+    animation: fadeInInput 1s ease forwards;
+  }
+
+  @keyframes fadeInInput {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  input:nth-child(1) {
+    animation-delay: 0.2s; /* Delay for the first input */
+  }
+
+  input:nth-child(2) {
+    animation-delay: 0.4s; /* Delay for the second input */
+  }
+
+  input:nth-child(3) {
+    animation-delay: 0.6s; /* Delay for the third input */
+  }
+
+  input:focus {
+    border-color: #0072ff;
+    box-shadow: 0 0 8px rgba(0, 114, 255, 0.4);
+  }
+
+  button {
+    width: 100%;
+    padding: 12px;
+    background: #0072ff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0;
+    animation: fadeInButton 1s ease forwards;
+  }
+
+  @keyframes fadeInButton {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  button:hover {
+    background: #005bb5;
+    transform: scale(1.05);
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #ff4d4d;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    display: none;
+    animation: fadeInToast 1s ease-out;
+  }
+
+  @keyframes fadeInToast {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Additional styling for form elements */
+  input, button {
+    font-size: 16px;
+  }
+
+  input::placeholder {
+    color: #bbb;
+  }
+
+/* Responsive Styling for Smaller Screens */
+  @media screen and (max-width: 600px) {
+    body {
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 20px;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 100%;
+      padding: 20px;
+    }
+
+    .login-container h2 {
+      font-size: 20px;
+    }
+
+    input, button {
+      font-size: 16px;
+    }
+  }
+  
+</style>
+
+
+</head>
+<body>
+<div class="cloud">
+  <img src="assest/cloud.png" alt="Cloud" />
+</div>
+
+
+  <div class="login-container">
+    <h2>Login</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="loginUser()">Login</button>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+       apiKey: "AIzaSyCfRjYCF7k6bV3Pp9BHXm86yEVkkll4rzQ",
+  authDomain: "helix-ofc-7d382.firebaseapp.com",
+  databaseURL: "https://helix-ofc-7d382-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "helix-ofc-7d382",
+  storageBucket: "helix-ofc-7d382.appspot.com",
+  messagingSenderId: "443626880782",
+  appId: "1:443626880782:web:0a697b0fb7eafe4910615f",
+  measurementId: "G-C9P4SYW613"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.style.display = 'block';
+      setTimeout(() => toast.style.display = 'none', 3000);
+    }
+
+    function loginUser() {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+      if (!email || !password) {
+        showToast("Please fill in all fields.");
+        return;
+      }
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => {
+          window.location.href = "index.html"; // Go to Product Gallery
+        })
+        .catch(error => {
+          showToast(error.message);
+        });
+    }
+  </script>
+
+</body>
+</html>
