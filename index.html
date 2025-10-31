@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet"/>
   <style>
-    /* --- Snowfall Animation Background --- */
+/* --- Snowfall Animation Background --- */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -22,21 +22,7 @@ body {
   position: relative;
 }
 
-/* Snow animation */
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  
-  background-size: cover;
-  opacity: 0.5;
-  z-index: 1;
-  pointer-events: none;
-}
-
+/* Header */
 header {
   background: #2c3e50;
   padding: 1rem 2rem;
@@ -104,6 +90,7 @@ header {
   background-color: #eee;
 }
 
+/* Titles */
 .gallery-title {
   text-align: center;
   font-size: 2rem;
@@ -121,6 +108,7 @@ header {
   z-index: 2;
 }
 
+/* Course Gallery */
 .course-gallery {
   display: flex;
   justify-content: center;
@@ -136,7 +124,7 @@ header {
   border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.1);
   transition: 0.3s ease;
-  width: 250px;
+  width: 260px;
   cursor: pointer;
   text-align: center;
   padding: 1rem;
@@ -148,7 +136,9 @@ header {
 }
 .course img {
   width: 100%;
+  height: auto;
   border-radius: 10px;
+  object-fit: cover;
 }
 .start-btn {
   margin-top: 10px;
@@ -164,6 +154,7 @@ header {
   transform: scale(1.05);
 }
 
+/* Lightbox */
 .course-lightbox {
   position: fixed;
   top: 0;
@@ -233,9 +224,10 @@ header {
     flex-direction: column;
     align-items: center;
   }
+  #searchBar {
+    width: 200px;
+  }
 }
-
-
   </style>
 </head>
 <body>
@@ -243,12 +235,11 @@ header {
 <header>
   <div class="nav-left">
     <a href="profile.html">
-      <img src="https://ibb.co/mCwp0YSC" alt="User" class="logo">
+      <img src="https://i.ibb.co/SXnYVbds/images-1.jpg" alt="User" class="logo" style="height:50px;width:50px;border-radius:50%;">
     </a>
     <h1 class="brand">PoloBear</h1>
   </div>
   <div class="nav-right">
-    <button>සිංහල</button>
     <div style="position: relative;">
       <input type="text" id="searchBar" placeholder="Search courses...">
       <div id="suggestions" class="autocomplete-suggestions"></div>
@@ -256,55 +247,48 @@ header {
   </div>
 </header>
 
-
-
-<h3 class="special-classes">Special Classes</h3>
-
-
-
-
+<h3 class="special-classes">Live Classes</h3>
 
 <section class="course-gallery">
   <div class="course" data-title="Grade 5 Scholarship Class" onclick="openLightbox('scholarship')">
-    <img src="https://ibb.co/20dscqH0" alt="Scholarship Course">
+    <img src="https://i.ibb.co/PvKFSfLV/school.png" alt="Scholarship Course">
     <h3>Grade 5 Scholarship Class</h3>
     <button class="start-btn">Start</button>
   </div>
 </section>
 
 <h2 class="gallery-title">Course Gallery</h2>
+
 <section class="course-gallery" id="courseGallery">
   <div class="course" data-title="HTML Crash Course" onclick="openLightbox('html')">
-    <img src="https://ibb.co/C3PBFqMg" alt="HTML Course">
+    <img src="https://i.ibb.co/FLH6t902/html.png" alt="HTML Course">
     <h3>HTML Crash Course</h3>
     <button class="start-btn">Start</button>
   </div>
-  <div class="course" data-title="Ai Crash Course" onclick="openLightbox('css')">
-    <img src="https://ibb.co/27fs3twR" alt="CSS Course">
-    <h3>Ai Course</h3>
+  <div class="course" data-title="AI Crash Course" onclick="openLightbox('ai')">
+    <img src="https://i.ibb.co/TBFbM8ZJ/ai.png" alt="AI Course">
+    <h3>AI Course</h3>
     <button class="start-btn">Start</button>
   </div>
 </section>
-
-
 
 <!-- Lightboxes -->
 <div id="html" class="course-lightbox">
   <div class="lightbox-content">
     <span class="close-btn" onclick="closeLightbox('html')">&times;</span>
     <h3>HTML Crash Course</h3>
-    <img src="https://ibb.co/27fs3twR" alt="HTML Course">
-    <p>Description of HTML Crash Course...</p>
+    <img src="https://i.ibb.co/FLH6t902/html.png" alt="HTML Course">
+    <p>Learn HTML from the ground up! This crash course covers structure, elements, attributes, and full web page creation techniques.</p>
     <a href="html.html"><button class="start-btn">Start Course</button></a>
   </div>
 </div>
 
-<div id="css" class="course-lightbox">
+<div id="ai" class="course-lightbox">
   <div class="lightbox-content">
-    <span class="close-btn" onclick="closeLightbox('css')">&times;</span>
-    <h3>Ai Course</h3>
-    <img src="https://ibb.co/27fs3twR" alt="CSS Course">
-    <p>Description of Ai Crash Course...</p>
+    <span class="close-btn" onclick="closeLightbox('ai')">&times;</span>
+    <h3>AI Crash Course</h3>
+    <img src="https://i.ibb.co/TBFbM8ZJ/ai.png" alt="AI Course">
+    <p>Explore the basics of Artificial Intelligence — from neural networks to machine learning — with interactive lessons and visuals.</p>
     <a href="ai.html"><button class="start-btn">Start Course</button></a>
   </div>
 </div>
@@ -313,49 +297,49 @@ header {
   <div class="lightbox-content">
     <span class="close-btn" onclick="closeLightbox('scholarship')">&times;</span>
     <h3>Grade 5 Scholarship Class</h3>
-    <img src="https://ibb.co/20dscqH0" alt="Scholarship Course">
+    <img src="https://i.ibb.co/PvKFSfLV/school.png" alt="Scholarship Course">
     <p>This special class is designed to prepare Grade 5 students for the Scholarship Exam with focused lessons, mock tests, and expert guidance.</p>
     <a href="scholarship.html"><button class="start-btn">Start Course</button></a>
   </div>
 </div>
 
 <script>
-  const courseTitles = ["HTML Crash Course", "CSS Crash Course", "Grade 5 Scholarship Class"];
-  const searchInput = document.getElementById("searchBar");
-  const suggestionBox = document.getElementById("suggestions");
+const courseTitles = ["HTML Crash Course", "AI Crash Course", "Grade 5 Scholarship Class"];
+const searchInput = document.getElementById("searchBar");
+const suggestionBox = document.getElementById("suggestions");
 
-  searchInput.addEventListener("input", function () {
-    const filter = this.value.toLowerCase();
-    const courses = document.querySelectorAll(".course");
-    suggestionBox.innerHTML = '';
+searchInput.addEventListener("input", function () {
+  const filter = this.value.toLowerCase();
+  const courses = document.querySelectorAll(".course");
+  suggestionBox.innerHTML = '';
 
-    courses.forEach(course => {
-      const title = course.getAttribute("data-title").toLowerCase();
-      course.style.display = title.includes(filter) ? "block" : "none";
+  courses.forEach(course => {
+    const title = course.getAttribute("data-title").toLowerCase();
+    course.style.display = title.includes(filter) ? "block" : "none";
 
-      if (filter && title.includes(filter)) {
-        const suggestion = document.createElement("div");
-        suggestion.textContent = course.getAttribute("data-title");
-        suggestion.onclick = () => {
-          searchInput.value = course.getAttribute("data-title");
-          suggestionBox.innerHTML = '';
-          courses.forEach(c => {
-            c.style.display = c.getAttribute("data-title").toLowerCase().includes(filter) ? "block" : "none";
-          });
-        };
-        suggestionBox.appendChild(suggestion);
-      }
-    });
-
-    if (!filter) suggestionBox.innerHTML = '';
+    if (filter && title.includes(filter)) {
+      const suggestion = document.createElement("div");
+      suggestion.textContent = course.getAttribute("data-title");
+      suggestion.onclick = () => {
+        searchInput.value = course.getAttribute("data-title");
+        suggestionBox.innerHTML = '';
+        courses.forEach(c => {
+          c.style.display = c.getAttribute("data-title").toLowerCase().includes(filter) ? "block" : "none";
+        });
+      };
+      suggestionBox.appendChild(suggestion);
+    }
   });
 
-  function openLightbox(id) {
-    document.getElementById(id).style.display = "flex";
-  }
-  function closeLightbox(id) {
-    document.getElementById(id).style.display = "none";
-  }
+  if (!filter) suggestionBox.innerHTML = '';
+});
+
+function openLightbox(id) {
+  document.getElementById(id).style.display = "flex";
+}
+function closeLightbox(id) {
+  document.getElementById(id).style.display = "none";
+}
 </script>
 </body>
 </html>
