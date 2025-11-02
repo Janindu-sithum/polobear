@@ -1,183 +1,355 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>New Student Applications</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>Science Class - Join & Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Boxicons for icons -->
   <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
   <style>
     body {
-      font-family: 'Poppins', sans-serif;
-      background: #f3f5f7;
+      font-family: 'Segoe UI', sans-serif;
       margin: 0;
-      padding: 0;
+      background: linear-gradient(135deg, #e0f7ff, #f8ffff);
+      min-height: 100vh;
+      overflow-x: hidden;
     }
-
-    header {
-      background: #007bff;
-      color: white;
-      text-align: center;
-      padding: 15px 0;
-      font-size: 22px;
-      font-weight: 600;
+    nav {
+      background: #fff;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
-
-    .container {
-      max-width: 800px;
-      margin: 30px auto;
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-
-    .student-card {
-      border-bottom: 1px solid #ddd;
-      padding: 12px;
+    .logo {
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: #00bfff;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      transition: 0.3s;
+      gap: 10px;
     }
-
-    .student-card:hover {
-      background: #f7f9fb;
+    .logo i {
+      color: #00bfff;
+      font-size: 1.8rem;
     }
-
-    .student-info {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
+    .nav-links a {
+      text-decoration: none;
+      color: #007acc;
+      margin-left: 20px;
+      font-weight: bold;
+      transition: color 0.3s;
     }
-
-    .student-info h3 {
-      margin: 0;
-      font-size: 18px;
+    .nav-links a:hover {
+      color: #00bfff;
     }
-
-    .student-info p {
-      margin: 0;
-      color: #555;
-      font-size: 14px;
+    .container {
+      text-align: center;
+      margin-top: 80px;
+      animation: fadeIn 0.8s ease;
     }
-
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    input {
+      padding: 12px;
+      width: 260px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      margin-top: 15px;
+      font-size: 1rem;
+    }
     button {
-      background: #007bff;
+      background: #00bfff;
       color: white;
       border: none;
-      padding: 8px 15px;
-      border-radius: 6px;
+      border-radius: 10px;
+      padding: 12px 25px;
+      font-size: 1rem;
+      font-weight: bold;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #0099cc;
+    }
+    .logout-btn {
+      background: #ff4d4d;
+      margin-left: 10px;
+    }
+    .logout-btn:hover {
+      background: #e63939;
+    }
+    .illustration {
+      font-size: 5rem;
+      color: #00bfff;
+      margin-bottom: 10px;
+    }
+
+    /* Description Section */
+    .description {
+      background: #ffffff;
+      border-radius: 20px;
+      margin: 60px auto;
+      max-width: 850px;
+      padding: 40px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      animation: fadeIn 1s ease;
+      text-align: left;
+      line-height: 1.7;
+    }
+    .description h2 {
+      color: #007acc;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .apply-btn {
+      display: block;
+      margin: 30px auto 0;
+      background: #00bfff;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 30px;
+      font-size: 1.1rem;
+      font-weight: bold;
       cursor: pointer;
       transition: 0.3s;
     }
-
-    button:hover {
-      background: #005ecb;
+    .apply-btn:hover {
+      background: #0099cc;
     }
 
-    .correct {
-      background: #28a745 !important;
-    }
-
-    .notification {
+    /* Lightbox Form */
+    .lightbox {
       position: fixed;
-      top: -60px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #28a745;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-      transition: top 0.5s ease;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
       z-index: 1000;
     }
-
-    .notification.show {
+    .lightbox-content {
+      background: #fff;
+      border-radius: 15px;
+      padding: 30px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      animation: fadeIn 0.5s ease;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .lightbox-content h3 {
+      margin-top: 0;
+      color: #007acc;
+    }
+    .lightbox-content input {
+      display: block;
+      width: 90%;
+      margin: 10px auto;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    .close-btn {
+      position: absolute;
       top: 20px;
+      right: 30px;
+      font-size: 2rem;
+      color: white;
+      cursor: pointer;
+    }
+    .success {
+      color: green;
+      font-weight: bold;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
-  <header>
-    🧠 New Student Applications
-  </header>
 
-  <div id="notification" class="notification">New Student Applied!</div>
+  <nav>
+    <div class="logo"><i class='bx bxs-flask'></i> Science Class</div>
+    <div class="nav-links">
+      <a href="index.html"><i class='bx bx-home'></i> Home</a>
+      <a href="#"><i class='bx bx-book'></i> Papers</a>
+    </div>
+  </nav>
 
-  <div class="container" id="studentsContainer">
-    <p>Loading student data...</p>
+  <div class="container" id="joinSection">
+    <div class="illustration"><i class='bx bxs-brain'></i></div>
+    <h2>Join the Science Class 🔬</h2>
+    <input type="text" id="studentIdInput" placeholder="Enter your Student ID" />
+    <br>
+    <button onclick="joinClass()"><i class='bx bx-log-in'></i> Join Now</button>
+  </div>
+
+  <div class="container" id="profileSection" style="display:none;">
+    <div class="illustration"><i class='bx bxs-user-circle'></i></div>
+    <h2>Welcome Back, Scientist 👩‍🔬</h2>
+    <div>
+      <button onclick="goToProfile()"><i class='bx bxs-id-card'></i> Your Profile</button>
+      <button class="logout-btn" onclick="logout()"><i class='bx bx-log-out'></i> Logout</button>
+    </div>
+  </div>
+
+  <!-- Description Section -->
+  <div class="description">
+    <h2>🔬✨ විද්‍යා පංතිය (Science Class) — Grade 6 සිට 11 දක්වා ✨🔬</h2>
+
+    <p>👩‍🏫 ආචාර්ය <b>ඔෂානි රිදීවිට (Oshani Rideevita)</b> මැදම විසින් මෙය පවත්වානු ලබන අතර, විද්‍යාව ගැන සිසුන්ට ඇති භය සහ අපැහැදිලිකම ඉවත් කරමින්, විද්‍යාවට ආදරය කරවීම මෙහි ප්‍රධාන අරමුණයි.</p>
+
+    <p>🎓 <b>උපාධිය:</b> BSc (Hons) in Biological Sciences<br>
+    🧠 අත්දැකීම් සහිත ගුරුවරියක් ලෙස සිසුන්ට විද්‍යා විෂයය නවතම ක්‍රමවේදයන්ගෙන් සහ විනෝදජනක උදාහරණවලින් ඉගැන්වීමට කැපවෙයි.</p>
+
+    <p>📚 <b>පංති අන්තර්ගතය:</b><br>
+    🧪 Unit Tests<br>
+    📄 Past Paper Discussions<br>
+    🔁 Revision Sessions<br>
+    💬 Doubt Clearing Sessions<br>
+    💰 පංති ගාස්තුව: රු. 1000/= (මාසික)</p>
+
+    <p>🌟 <b>මෙම පංතියෙන් ඔබට ලැබෙන වාසි:</b><br>
+    • විද්‍යාව සරලව හා විනෝදජනක ලෙස ඉගෙන ගැනීම 🧬<br>
+    • විභාගවලදී නිවැරදි ලිවීමේ හැකියාව වර්ධනය කිරීම ✍️<br>
+    • විද්‍යා විෂයය ගැන ගැඹුරු අවබෝධයක් ලබා ගැනීම 🔍<br>
+    • පළපුරුදු ගුරු මගපෙන්වීමෙන් විශ්වාසය සහ මනෝබලය වැඩි කිරීම 💪</p>
+
+    <p>📍 පංතිය පවත්වන ස්ථානය: (අවශ්‍ය නම් පසුව සඳහන් කළ හැක)<br>
+    📞 විමසීම් සඳහා: (අංකයක් එක් කළ හැක)</p>
+
+    <p>🚀 ඔබේ විද්‍යා විභාග ජය Oshani Rideevita මැදම සමඟ!<br>
+    <b>"විද්‍යාව කියවන්න, හොඳින් තේරුම් ගන්න, ජයගන්න!" 🌈🧠</b></p>
+
+    <button class="apply-btn" onclick="openApplyForm()"><i class='bx bx-edit'></i> Apply Now</button>
+  </div>
+
+  <!-- Lightbox Form -->
+  <div class="lightbox" id="applyLightbox">
+    <div class="lightbox-content">
+      <h3>Science Class Application</h3>
+      <input type="text" id="appName" placeholder="Student Name" />
+      <input type="text" id="appGrade" placeholder="Grade" />
+      <input type="text" id="appWhatsApp" placeholder="WhatsApp Number" />
+      <input type="text" id="appPhone" placeholder="Phone Number" />
+      <input type="text" id="appAddress" placeholder="Address" />
+      <button onclick="submitApplication()">Submit</button>
+      <p class="success" id="successMsg" style="display:none;">✅ You will be contacted soon!</p>
+    </div>
+    <div class="close-btn" onclick="closeApplyForm()">&times;</div>
   </div>
 
   <!-- Firebase SDK -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
-    // ✅ Replace with your Firebase config
+  <script>
     const firebaseConfig = {
-       apiKey: "AIzaSyCfRjYCF7k6bV3Pp9BHXm86yEVkkll4rzQ",
-  authDomain: "helix-ofc-7d382.firebaseapp.com",
-  databaseURL: "https://helix-ofc-7d382-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "helix-ofc-7d382",
-  storageBucket: "helix-ofc-7d382.appspot.com",
-  messagingSenderId: "443626880782",
-  appId: "1:443626880782:web:0a697b0fb7eafe4910615f",
-  measurementId: "G-C9P4SYW613"
+      apiKey: "AIzaSyCfRjYCF7k6bV3Pp9BHXm86yEVkkll4rzQ",
+      authDomain: "helix-ofc-7d382.firebaseapp.com",
+      projectId: "helix-ofc-7d382",
+      storageBucket: "helix-ofc-7d382.appspot.com",
+      messagingSenderId: "443626880782",
+      appId: "1:443626880782:web:0a697b0fb7eafe4910615f"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    let currentStudentId = "";
 
-    const studentsContainer = document.getElementById("studentsContainer");
-    const notification = document.getElementById("notification");
+    // Load saved ID
+    window.onload = () => {
+      const savedId = localStorage.getItem("scienceStudentId");
+      if (savedId) {
+        db.collection("students").doc(savedId).get().then(doc => {
+          if (doc.exists) showProfile(savedId);
+          else {
+            localStorage.removeItem("scienceStudentId");
+            showJoinForm();
+          }
+        }).catch(() => showJoinForm());
+      } else showJoinForm();
+    };
 
-    // Function to show notification
-    function showNotification() {
-      notification.classList.add("show");
-      setTimeout(() => {
-        notification.classList.remove("show");
-      }, 3000);
+    function joinClass() {
+      const id = document.getElementById("studentIdInput").value.trim();
+      if (!id) return alert("Please enter your Student ID");
+
+      db.collection("students").doc(id).get().then(doc => {
+        if (doc.exists) {
+          localStorage.setItem("scienceStudentId", id);
+          showProfile(id);
+        } else {
+          alert("ID not found. Please check again.");
+        }
+      });
     }
 
-    // Real-time listener for "students" collection
-    const studentsRef = collection(db, "students");
-    onSnapshot(studentsRef, (snapshot) => {
-      studentsContainer.innerHTML = "";
-      if (snapshot.empty) {
-        studentsContainer.innerHTML = "<p>No student applications yet.</p>";
+    function goToProfile() {
+      if (currentStudentId) {
+        window.location.href = `student.html?id=${currentStudentId}`;
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("scienceStudentId");
+      currentStudentId = "";
+      showJoinForm();
+    }
+
+    function showProfile(id) {
+      currentStudentId = id;
+      document.getElementById("joinSection").style.display = "none";
+      document.getElementById("profileSection").style.display = "block";
+    }
+
+    function showJoinForm() {
+      document.getElementById("joinSection").style.display = "block";
+      document.getElementById("profileSection").style.display = "none";
+    }
+
+    // Apply Lightbox Functions
+    function openApplyForm() {
+      document.getElementById("applyLightbox").style.display = "flex";
+    }
+
+    function closeApplyForm() {
+      document.getElementById("applyLightbox").style.display = "none";
+      document.getElementById("successMsg").style.display = "none";
+    }
+
+    function submitApplication() {
+      const name = document.getElementById("appName").value.trim();
+      const grade = document.getElementById("appGrade").value.trim();
+      const whatsapp = document.getElementById("appWhatsApp").value.trim();
+      const phone = document.getElementById("appPhone").value.trim();
+      const address = document.getElementById("appAddress").value.trim();
+
+      if (!name || !grade || !whatsapp || !phone || !address) {
+        alert("Please fill all fields.");
         return;
       }
 
-      showNotification(); // show each time new data received
-
-      snapshot.forEach((docSnap) => {
-        const student = docSnap.data();
-        const id = docSnap.id;
-
-        const card = document.createElement("div");
-        card.className = "student-card";
-
-        card.innerHTML = `
-          <div class="student-info">
-            <h3>${student.name}</h3>
-            <p>Grade: ${student.grade}</p>
-            <p>WhatsApp: ${student.whatsapp}</p>
-            <p>Address: ${student.address}</p>
-          </div>
-          <button class="add-btn">Add</button>
-        `;
-
-        const btn = card.querySelector(".add-btn");
-        btn.addEventListener("click", async () => {
-          btn.textContent = "✅ Correct";
-          btn.classList.add("correct");
-          await updateDoc(doc(db, "students", id), { status: "correct" });
-        });
-
-        studentsContainer.appendChild(card);
-      });
-    });
+      db.collection("scienceApplications").add({
+        name, grade, whatsapp, phone, address,
+        timestamp: new Date()
+      }).then(() => {
+        document.getElementById("successMsg").style.display = "block";
+        document.getElementById("appName").value = "";
+        document.getElementById("appGrade").value = "";
+        document.getElementById("appWhatsApp").value = "";
+        document.getElementById("appPhone").value = "";
+        document.getElementById("appAddress").value = "";
+      }).catch(() => alert("Error saving data!"));
+    }
   </script>
+
 </body>
 </html>
