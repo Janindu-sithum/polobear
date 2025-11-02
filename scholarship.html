@@ -1,103 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Scholarship Class</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <title>New Student Applications</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
   <style>
-    body { font-family: 'Segoe UI', sans-serif; background: #f1fbff; padding: 20px; margin: 0; }
-    nav { background: #fff; padding: 15px 30px; display: flex; justify-content: space-between; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); }
-    .logo { font-size: 1.5rem; font-weight: bold; color: #00bfff; }
-    .nav-links a { margin-left: 20px; text-decoration: none; color: #007acc; font-weight: bold; }
-    .join-class, .profile-button { text-align: center; margin-top: 40px; }
-    input { padding: 10px; width: 250px; margin: 10px; border-radius: 8px; border: 1px solid #ccc; }
-    button { background: #00bfff; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f3f5f7;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: #007bff;
+      color: white;
+      text-align: center;
+      padding: 15px 0;
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 30px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .student-card {
+      border-bottom: 1px solid #ddd;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: 0.3s;
+    }
+
+    .student-card:hover {
+      background: #f7f9fb;
+    }
+
+    .student-info {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .student-info h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .student-info p {
+      margin: 0;
+      color: #555;
+      font-size: 14px;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #005ecb;
+    }
+
+    .correct {
+      background: #28a745 !important;
+    }
+
+    .notification {
+      position: fixed;
+      top: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #28a745;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      transition: top 0.5s ease;
+      z-index: 1000;
+    }
+
+    .notification.show {
+      top: 20px;
+    }
   </style>
 </head>
 <body>
+  <header>
+    🧠 New Student Applications
+  </header>
 
-  <nav>
-    <div class="logo">Scholarship Class</div>
-    <div class="nav-links">
-      <a href="index.html">Courses</a>
-      <a href="#">Papers</a>
-    </div>
-  </nav>
+  <div id="notification" class="notification">New Student Applied!</div>
 
-  <div class="join-class" id="joinSection">
-    <input type="text" id="studentIdInput" placeholder="Enter your Student ID" />
-    <button onclick="joinClass()">Go</button>
-  </div>
-
-  <div class="profile-button" id="profileSection" style="display:none;">
-    <button onclick="goToProfile()">Your Profile</button>
+  <div class="container" id="studentsContainer">
+    <p>Loading student data...</p>
   </div>
 
   <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getFirestore, collection, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    // ✅ Replace with your Firebase config
     const firebaseConfig = {
-      apiKey: "AIzaSyCfRjYCF7k6bV3Pp9BHXm86yEVkkll4rzQ",
-      authDomain: "helix-ofc-7d382.firebaseapp.com",
-      projectId: "helix-ofc-7d382",
-      storageBucket: "helix-ofc-7d382.appspot.com",
-      messagingSenderId: "443626880782",
-      appId: "1:443626880782:web:0a697b0fb7eafe4910615f"
+       apiKey: "AIzaSyCfRjYCF7k6bV3Pp9BHXm86yEVkkll4rzQ",
+  authDomain: "helix-ofc-7d382.firebaseapp.com",
+  databaseURL: "https://helix-ofc-7d382-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "helix-ofc-7d382",
+  storageBucket: "helix-ofc-7d382.appspot.com",
+  messagingSenderId: "443626880782",
+  appId: "1:443626880782:web:0a697b0fb7eafe4910615f",
+  measurementId: "G-C9P4SYW613"
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-    let currentStudentId = "";
+    const studentsContainer = document.getElementById("studentsContainer");
+    const notification = document.getElementById("notification");
 
-    // Check saved ID on page load
-    window.onload = () => {
-      const savedId = localStorage.getItem("studentId");
-      if (savedId) {
-        db.collection("students").doc(savedId).get().then(doc => {
-          if (doc.exists) {
-            showProfile(savedId);
-          } else {
-            localStorage.removeItem("studentId");
-            showJoinForm();
-          }
-        }).catch(() => showJoinForm());
-      } else {
-        showJoinForm();
+    // Function to show notification
+    function showNotification() {
+      notification.classList.add("show");
+      setTimeout(() => {
+        notification.classList.remove("show");
+      }, 3000);
+    }
+
+    // Real-time listener for "students" collection
+    const studentsRef = collection(db, "students");
+    onSnapshot(studentsRef, (snapshot) => {
+      studentsContainer.innerHTML = "";
+      if (snapshot.empty) {
+        studentsContainer.innerHTML = "<p>No student applications yet.</p>";
+        return;
       }
-    };
 
-    function joinClass() {
-      const id = document.getElementById("studentIdInput").value.trim();
-      if (!id) return alert("Please enter your Student ID");
+      showNotification(); // show each time new data received
 
-      db.collection("students").doc(id).get().then(doc => {
-        if (doc.exists) {
-          localStorage.setItem("studentId", id);
-          showProfile(id);
-        } else {
-          alert("ID not found. Please check again.");
-        }
+      snapshot.forEach((docSnap) => {
+        const student = docSnap.data();
+        const id = docSnap.id;
+
+        const card = document.createElement("div");
+        card.className = "student-card";
+
+        card.innerHTML = `
+          <div class="student-info">
+            <h3>${student.name}</h3>
+            <p>Grade: ${student.grade}</p>
+            <p>WhatsApp: ${student.whatsapp}</p>
+            <p>Address: ${student.address}</p>
+          </div>
+          <button class="add-btn">Add</button>
+        `;
+
+        const btn = card.querySelector(".add-btn");
+        btn.addEventListener("click", async () => {
+          btn.textContent = "✅ Correct";
+          btn.classList.add("correct");
+          await updateDoc(doc(db, "students", id), { status: "correct" });
+        });
+
+        studentsContainer.appendChild(card);
       });
-    }
-
-    function goToProfile() {
-      if (currentStudentId) {
-        window.location.href = `student.html?id=${currentStudentId}`;
-      }
-    }
-
-    function showProfile(id) {
-      currentStudentId = id;
-      document.getElementById("joinSection").style.display = "none";
-      document.getElementById("profileSection").style.display = "block";
-    }
-
-    function showJoinForm() {
-      document.getElementById("joinSection").style.display = "block";
-      document.getElementById("profileSection").style.display = "none";
-    }
+    });
   </script>
 </body>
 </html>
