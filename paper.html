@@ -3,21 +3,116 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Papers Download Hub</title>
+  <title>Papers Download Hub — Polobear</title>
 
-  <!-- ✅ Add this script exactly here -->
+  <!-- ✅ Google AdSense Verification -->
+  <meta name="google-site-verification" content="XXXXXXX"> <!-- Replace XXXXXXX with AdSense meta code -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6053626510737925"
-     crossorigin="anonymous"></script>
+      crossorigin="anonymous"></script>
 
   <style>
     body {
       font-family: Poppins, sans-serif;
-      background: #f8fbff;
+      background-color: #f8fbff;
       color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #00aaff;
+      color: #fff;
+      padding: 1rem;
+      text-align: center;
+    }
+    main {
+      padding: 1rem;
+    }
+    select, button {
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+      border-radius: 5px;
+      border: 1px solid #00aaff;
+    }
+    .paper-item {
+      background: #fff;
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    a.download {
+      background: #00aaff;
+      color: #fff;
+      padding: 0.3rem 0.6rem;
+      border-radius: 3px;
+      text-decoration: none;
+      margin-left: 1rem;
     }
   </style>
 </head>
 <body>
-  <!-- Page content here -->
+  <header>
+    <h1>Papers Download Hub</h1>
+  </header>
+  <main>
+    <label for="grade">Select Grade:</label>
+    <select id="grade">
+      <option value="">--Select Grade--</option>
+      <option value="1">Grade 1</option>
+      <option value="2">Grade 2</option>
+      <option value="3">Grade 3</option>
+      <option value="4">Grade 4</option>
+      <option value="5">Grade 5</option>
+    </select>
+
+    <div id="subjects-container" style="display:none;">
+      <label for="subject">Select Subject:</label>
+      <select id="subject"></select>
+    </div>
+
+    <div id="papers-container"></div>
+  </main>
+
+  <script>
+    const gradeSelect = document.getElementById('grade');
+    const subjectSelect = document.getElementById('subject');
+    const subjectsContainer = document.getElementById('subjects-container');
+    const papersContainer = document.getElementById('papers-container');
+
+    const data = {
+      1: { "Maths": [{name:"Paper 1", link:"#"}, {name:"Paper 2", link:"#"}], "Science": [{name:"Paper A", link:"#"}] },
+      2: { "Maths": [{name:"Paper 1", link:"#"}], "Sinhala": [{name:"Paper A", link:"#"}] },
+      3: { "Maths": [{name:"Paper 1", link:"#"}], "Science": [{name:"Paper A", link:"#"}] }
+    };
+
+    gradeSelect.addEventListener('change', () => {
+      const grade = gradeSelect.value;
+      papersContainer.innerHTML = '';
+      if(grade && data[grade]){
+        subjectsContainer.style.display = 'block';
+        subjectSelect.innerHTML = '<option value="">--Select Subject--</option>';
+        Object.keys(data[grade]).forEach(sub => {
+          subjectSelect.innerHTML += `<option value="${sub}">${sub}</option>`;
+        });
+      } else {
+        subjectsContainer.style.display = 'none';
+      }
+    });
+
+    subjectSelect.addEventListener('change', () => {
+      const grade = gradeSelect.value;
+      const subject = subjectSelect.value;
+      papersContainer.innerHTML = '';
+      if(grade && subject && data[grade][subject]){
+        data[grade][subject].forEach(p => {
+          papersContainer.innerHTML += `
+            <div class="paper-item">
+              ${p.name} <a class="download" href="${p.link}" target="_blank">Download</a>
+            </div>
+          `;
+        });
+      }
+    });
+  </script>
 </body>
 </html>
